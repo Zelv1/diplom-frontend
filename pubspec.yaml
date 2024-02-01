@@ -1,0 +1,49 @@
+name: diplomversec
+description: A new Flutter project.
+
+publish_to: 'none' 
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.2 <4.0.0'
+
+dependencies:
+  flutter_bloc: ^8.0.1
+  bloc_concurrency: ^0.2.0
+  dio: ^4.0.6
+  equatable: ^2.0.5
+  http: ^1.1.0
+  stream_transform: ^2.0.0
+  qr_flutter: ^4.1.0
+  flutter:
+    sdk: flutter
+  formz: ^0.6.0
+  assets: ^0.0.1
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  bloc_test: ^9.1.0
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.0
+
+  flutter_lints: ^2.0.0
+
+flutter:
+
+  uses-material-design: true
+
+fonts:
+   - family: Comfortaa
+     fonts:
+      - asset: assets/Comfortaa-Bold.ttf
+        weight: 900
+      - asset: assets/Comfortaa-Light.ttf
+        weight: 300
+      - asset: assets/Comfortaa-Medium.ttf
+        weight: 500
+      - asset: assets/Comfortaa-Regular.ttf
+        weight: 400
+      - asset: assets/Comfortaa-SemiBold.ttf
+        style: italic
