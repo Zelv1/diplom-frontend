@@ -11,8 +11,8 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  TextEditingController _loginController1 = TextEditingController();
-  TextEditingController _passwordController2 = TextEditingController();
+  TextEditingController _loginController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +30,10 @@ class _AuthPageState extends State<AuthPage> {
             if (state is AuthLoadingState) {
               return CircularProgressIndicator();
             } else if (state is AuthErrorState) {
-              return Text(
-                'Error: ${state.errorMessage}',
-                style: TextStyle(color: Colors.red),
-              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ErrorBanner(context);
+                _passwordController.clear();
+              });
             }
             return Container(
               decoration: BoxDecoration(
@@ -54,6 +54,39 @@ class _AuthPageState extends State<AuthPage> {
               ),
             );
           })),
+    );
+  }
+
+  Future<dynamic> ErrorBanner(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title: const Text(
+              'Произошла ошибка',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.black,
+                fontFamily: 'Comfortaa',
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            content: Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.width * 0.15,
+              decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(32)),
+              child: const Text(
+                'Неправильный логин или пароль',
+                style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontFamily: 'Comfortaa',
+                    fontWeight: FontWeight.w500),
+              ),
+            ));
+      },
     );
   }
 
@@ -119,8 +152,8 @@ class _AuthPageState extends State<AuthPage> {
       child: ElevatedButton(
         onPressed: () {
           authBloc.add(AuthLoginEvent(
-              username: _loginController1.text,
-              password: _passwordController2.text));
+              username: _loginController.text,
+              password: _passwordController.text));
         },
         style: ElevatedButton.styleFrom(
           fixedSize: const Size(350, 55),
@@ -142,7 +175,7 @@ class _AuthPageState extends State<AuthPage> {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 350, maxHeight: 55),
       child: TextFormField(
-        controller: _loginController1,
+        controller: _loginController,
         decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(27),
             enabledBorder: OutlineInputBorder(
@@ -163,7 +196,7 @@ class _AuthPageState extends State<AuthPage> {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 350, maxHeight: 55),
       child: TextFormField(
-        controller: _passwordController2,
+        controller: _passwordController,
         obscureText: true,
         decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(27),
