@@ -2,6 +2,7 @@ import 'package:diplomversec/bloc/auth_bloc/auth_bloc.dart';
 import 'package:diplomversec/screens/screen_choice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:localstorage/localstorage.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -13,48 +14,54 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   TextEditingController _loginController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-
+  final LocalStorage storage = LocalStorage('token');
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthAuthenticatedState) {
-          print(state.token);
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ScreenChoice()));
-        }
-      },
-      child: Scaffold(
-          backgroundColor: Colors.grey[400],
-          body: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-            if (state is AuthLoadingState) {
-              return CircularProgressIndicator();
-            } else if (state is AuthErrorState) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                ErrorBanner(context);
-                _passwordController.clear();
-              });
-            }
-            return Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                    Colors.orange[200]!,
-                    Colors.orange[400]!,
-                    Colors.orange[600]!
-                  ],
-                ),
-              ),
-              child: Center(
-                child: SingleChildScrollView(
-                  child: authPage(context),
-                ),
-              ),
-            );
-          })),
-    );
+    return FutureBuilder(
+        future: storage.ready,
+        builder: (BuildContext context, snapshot) {
+          return BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthAuthenticatedState) {
+                storage.setItem('auth_token', state.token);
+                print(state.token);
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => ScreenChoice()));
+              }
+            },
+            child: Scaffold(
+                backgroundColor: Colors.white,
+                body:
+                    BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+                  if (state is AuthLoadingState) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is AuthErrorState) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      ErrorBanner(context);
+                      _passwordController.clear();
+                    });
+                  }
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomLeft,
+                        colors: [
+                          Colors.orange[200]!,
+                          Colors.orange[400]!,
+                          Colors.orange[600]!
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: authPage(context),
+                      ),
+                    ),
+                  );
+                })),
+          );
+        });
   }
 
   Future<dynamic> ErrorBanner(BuildContext context) {

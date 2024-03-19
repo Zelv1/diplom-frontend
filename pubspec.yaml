@@ -16,6 +16,7 @@ dependencies:
   http: ^1.1.0
   stream_transform: ^2.0.0
   qr_flutter: ^4.1.0
+  localstorage: ^4.0.0+1
   flutter:
     sdk: flutter
   formz: ^0.6.0
